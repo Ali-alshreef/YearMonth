@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using YearMonthApp;
-
-namespace YearMonthApp
+﻿namespace YearMonthApp
 {
     public class YearMonth
     {
@@ -17,42 +10,36 @@ namespace YearMonthApp
         /// <param name="FirestDateTime"></param>
         /// <param name="SecoundDate"></param>
         /// <returns></returns>
-        public static List<YearMonth> GetYearWithListMonts(DateTime FirestDateTime, DateTime SecoundDate)
+        public static Dictionary<int, List<int>> GetYearWithListMonths(DateTime firstDateTime, DateTime secondDate)
         {
-            List<YearMonth> YearMonths = new List<YearMonth>();
-            if (FirestDateTime != SecoundDate)
+            var yearMonths = new Dictionary<int, List<int>>();
+            
+            DateTime smallest = firstDateTime < secondDate ? firstDateTime : secondDate;
+            DateTime biggest = firstDateTime > secondDate ? firstDateTime : secondDate;
+            
+            int currentYear = smallest.Year;
+            int currentMonth = smallest.Month;
+            
+            while (currentYear <= biggest.Year)
             {
-                List<int> Months;
-                int currentYear = 0;
-                int countOfYears = 0;
-                int currentMonth = 0;
-                int countOfMonth = 0;
-
-                DateTime Smallest = FirestDateTime < SecoundDate ? FirestDateTime : SecoundDate;
-                DateTime Biggest = FirestDateTime > SecoundDate ? FirestDateTime : SecoundDate;
-
-                currentYear = Smallest.Year;
-                countOfYears = Biggest.Year - Smallest.Year; // for years
-                countOfMonth = 12 - Smallest.Month;
-                currentMonth = Smallest.Month;
-                for (int i = 0; i <= countOfYears; i++)
+                if (!yearMonths.ContainsKey(currentYear))
+                    yearMonths[currentYear] = new List<int>();
+                
+                yearMonths[currentYear].Add(currentMonth);
+                
+                currentMonth++;
+                
+                if (currentMonth > 12)
                 {
-                    Months = new List<int>();
-                    for (int j = 0; j <= countOfMonth; j++)
-                    {
-                        if (currentMonth <= 12)
-                        {
-                            Months.Add(currentMonth);
-                            currentMonth += 1;
-                        }
-                    }
-                    currentYear += 1;
                     currentMonth = 1;
-                    countOfMonth = currentYear == Biggest.Year ? Biggest.Month - 1 : 12;
-                    YearMonths.Add(new YearMonth { Year = currentYear - 1, Months = Months });
+                    currentYear++;
                 }
+
+                if (currentYear > biggest.Year || (currentYear == biggest.Year && currentMonth > biggest.Month))
+                    break;
             }
-            return YearMonths;
+
+            return yearMonths;
         }
     }
 }
